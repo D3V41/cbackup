@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ContactBackup</string>
+    <string name="andex_file_selection_title">Contact Backups</string>
+    <string name="browser_title_background_color">white</string>
+    <string name="browser_title_foreground_color">black</string>
+    <string name="browser_list_background_color">red</string>
+</resources>
