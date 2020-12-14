@@ -18,6 +18,7 @@ import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -59,10 +60,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnBackup,btnRestore;
+    Button btnBackup,btnRestore,btnContacts;
     Animation animebtn;
     ProgressBar progressBar,progressBar2;
-    TextView noofcontacts,txtvname,txtvphone;
+    TextView noofcontacts,txtvname,txtvphone,txtshare;
     ImageView person;
     String vfile = null;
     Cursor cursor;
@@ -92,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         progressBar2 = findViewById(R.id.progressBar2);
         txtvname = findViewById(R.id.textView2);
+        btnContacts = findViewById(R.id.button4);
+        txtshare = findViewById(R.id.textView4);
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics realDisplayMetrics = new DisplayMetrics();
@@ -151,6 +154,44 @@ public class MainActivity extends AppCompatActivity {
                     });
                     alertDialog1.show();
                 }
+            }
+        });
+
+        btnContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+                builder1.setTitle(vfile);
+                builder1.setCancelable(false);
+
+                builder1.setPositiveButton(
+                        "Share",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent sharingIntent = new Intent();
+                                sharingIntent.setAction(Intent.ACTION_SEND);
+                                String shareSub = "Contacts BackUp";
+                                sharingIntent.setPackage("com.google.android.gm");
+                                sharingIntent.setType(ContactsContract.Contacts.CONTENT_VCARD_TYPE);
+                                sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(Environment.getExternalStorageDirectory().toString() + File.separator + vfile)));
+                                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
+                                startActivity(Intent.createChooser(sharingIntent, "Share Contacts"));
+                            }
+
+
+
+                        });
+
+                builder1.setNegativeButton(
+                        "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent mIntent = new Intent();
+
+                            }
+                        });
+                AlertDialog alert11 = builder1.create();
+                alert11.show();
             }
         });
 
@@ -238,6 +279,9 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             progressBar2.setVisibility(ProgressBar.INVISIBLE);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            btnContacts.setVisibility(View.VISIBLE);
+            txtshare.setVisibility(View.VISIBLE);
+            btnContacts.setText(vfile);
             final AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
             builder1.setTitle("Backup created successfully");
             builder1.setMessage("Do you want to share your backup?");
@@ -265,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
                     "No",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            Toast.makeText(MainActivity.this,  "Backup is Stored in internal storage", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this,  "Backup is Stored in internal storage", Toast.LENGTH_SHORT).show();
                             dialog.cancel();
                         }
                     });
